@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "/Users/gallegos/.dotnet/store/|arch|/|tfm|",
+      "/Users/gallegos/.nuget/packages"
+    ]
+  }
+}
