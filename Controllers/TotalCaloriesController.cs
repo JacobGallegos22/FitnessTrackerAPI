@@ -22,7 +22,7 @@ namespace MyFitnessTrackerAPI.Controllers
 
         // GET: api/TotalCalories
         [HttpGet]
-        public ActionResult<int> GetTotalCalories(String time)
+        public ActionResult<Object> GetTotalCalories(String time)
         {
             DateTime dateStart = DateTime.Now;
             DateTime dateEnd = DateTime.Now;
@@ -32,7 +32,7 @@ namespace MyFitnessTrackerAPI.Controllers
             {
                 case "day":
                     dateStart = DateTime.Today;
-                    dateEnd = DateTime.Today.AddHours(23);
+                    dateEnd = DateTime.Today.AddTicks(-1).AddDays(1);
                     break;
                 case "week":
                     dateStart = DateTime.Today.AddDays(-1 * (int)(DateTime.Today.DayOfWeek));
@@ -42,7 +42,7 @@ namespace MyFitnessTrackerAPI.Controllers
                     dateStart = new DateTime(date.Year, date.Month, 1);
                     dateEnd = dateStart.AddMonths(1).AddDays(-1);
                     break;
-                case "Year":
+                case "year":
                     dateStart = new DateTime(date.Year, 1, 1);
                     dateEnd = new DateTime(date.Year, 12, 31);
                     break;
@@ -50,14 +50,18 @@ namespace MyFitnessTrackerAPI.Controllers
                     Console.WriteLine($"An unexpected value ({time})");
                     break;
             }
-            var totalCalories = (from calorie in _context.TotalCalories
-                                 where calorie.CreatedAt > dateStart && calorie.CreatedAt < dateEnd
-                                 select calorie).Count();
-            Console.WriteLine(totalCalories);
+            List<TotalCalories> totalCalories = (from calorie in _context.TotalCalories
+                                 where calorie.CreatedAt >= dateStart && calorie.CreatedAt < dateEnd
+                                 select calorie).ToList();
+            long sum = 0;
+            foreach (TotalCalories calorie in totalCalories)
+            {
+                sum += calorie.Calories;
+            }
+            
+            
 
-
-
-            return totalCalories;
+            return new {total = sum};
         }
 
         // GET: api/TotalCalories/5
